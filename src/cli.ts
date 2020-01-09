@@ -9,6 +9,7 @@ import * as execa from 'execa';
 import * as inquirer from 'inquirer';
 import Listr = require('listr');
 
+// tslint:disable-next-line:no-var-requires
 const { projectInstall } = require('pkg-install');
 const copy = util.promisify(ncp);
 const save = util.promisify(fs.writeFile);
@@ -105,6 +106,7 @@ async function promptForMissingOptions(options: any) {
       prefix: string;
       cluster: string;
     } = await inquirer.prompt(questions);
+    configFile.server.database.type = 'MONGO_ATLAS';
     configFile.server.database.mongo.database = {
       host: undefined,
       port: undefined,
@@ -135,6 +137,7 @@ async function promptForMissingOptions(options: any) {
       pass: string;
       prefix: string;
     } = await inquirer.prompt(questions);
+    configFile.server.database.type = 'MONGO_SELF_HOSTED';
     configFile.server.database.mongo.database = {
       host: answers.host,
       port: answers.port,
@@ -186,6 +189,7 @@ async function createProject(options: any) {
   ]);
   await tasks.run();
   await save(path.join(__dirname, 'starters', 'bcms-config.js'), '');
+  // tslint:disable-next-line:no-console
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
 }
 
