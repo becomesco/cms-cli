@@ -164,7 +164,7 @@ async function createProject(options: any) {
   };
   await save(
     path.join(__dirname, 'starters', 'bcms-config.js'),
-    `module.exports = ${JSON.stringify(options, null, '  ')}`,
+    `module.exports = ${JSON.stringify(options.config, null, '  ')}`,
   );
   const tasks = new Listr([
     {
