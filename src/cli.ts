@@ -162,7 +162,7 @@ async function createProject(options: any) {
     outputDir: path.join(process.env.PROJECT_ROOT, options.name),
   };
   await save(
-    path.join(__dirname, 'starter', 'bcms-config.js'),
+    path.join(__dirname, 'starters', 'bcms-config.js'),
     `module.exports = ${JSON.stringify(options, null, '  ')}`,
   );
   const tasks = new Listr([
@@ -184,7 +184,7 @@ async function createProject(options: any) {
     },
   ]);
   await tasks.run();
-  await save(path.join(__dirname, 'starter', 'bcms-config.js'), '');
+  await save(path.join(__dirname, 'starters', 'bcms-config.js'), '');
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
 }
 
