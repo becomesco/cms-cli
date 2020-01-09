@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as arg from 'arg';
 import * as path from 'path';
@@ -202,5 +203,8 @@ export async function cli(args) {
   let options = parseArgsIntoOptions(args);
   process.env.PROJECT_ROOT = process.cwd();
   options = await promptForMissingOptions(options);
+  configFile.server.security.jwt.secret = crypto
+    .randomBytes(256)
+    .toString('base64');
   await createProject(options);
 }
