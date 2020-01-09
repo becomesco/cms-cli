@@ -1,0 +1,16 @@
+{
+  "name": "bcms-starter",
+  "version": "1.0.0",
+  "description": "Starter project for Becomes CMS",
+  "main": "index.js",
+  "scripts": {
+    "serve": "bcms"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@becomes/cms": "^1.0"
+  },
+  "devDependencies": {}
+}

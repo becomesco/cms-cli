@@ -1,1 +1,1 @@
-# cms-cli
+# Becomes CMS CLI
