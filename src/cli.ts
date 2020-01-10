@@ -13,6 +13,7 @@ import Listr = require('listr');
 const { projectInstall } = require('pkg-install');
 const copy = util.promisify(ncp);
 const save = util.promisify(fs.writeFile);
+const copyFile = util.promisify(fs.copyFile);
 const configFile = {
   server: {
     port: 1280,
@@ -61,7 +62,7 @@ function parseArgsIntoOptions(rawArgs) {
   return {
     atlas: args['--atlas'] || false,
     name: args['--name'] || 'bcms-project',
-    templateDir: path.join(__dirname, '/starters/'),
+    templateDir: path.join(__dirname, '/starters'),
     ngit: args['--ngit'] || false,
   };
 }
@@ -173,11 +174,6 @@ async function createProject(options: any) {
     {
       title: 'Copy project files',
       task: () => copyTemplateFiles(options),
-    },
-    {
-      title: 'Initialize Git',
-      task: () => initGit(options),
-      enabled: () => !options.ngit,
     },
     {
       title: 'Install dependencies',
