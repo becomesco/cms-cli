@@ -13,7 +13,6 @@ import Listr = require('listr');
 const { projectInstall } = require('pkg-install');
 const copy = util.promisify(ncp);
 const save = util.promisify(fs.writeFile);
-const copyFile = util.promisify(fs.copyFile);
 const configFile = {
   server: {
     port: 1280,
@@ -37,9 +36,14 @@ const configFile = {
         },
       },
     },
-    github: {
-      username: 'github-username',
-      password: 'github-password',
+    git: {
+      email: 'user-email',
+      username: 'username',
+      password: 'user-password',
+      host: 'git-host',
+      repo: 'git-repo',
+      repo_owner: 'git-repo-owner',
+      branch: 'git-repo-branch',
     },
     env: {},
   },
@@ -204,7 +208,7 @@ export async function cli(args) {
   process.env.PROJECT_ROOT = process.cwd();
   options = await promptForMissingOptions(options);
   configFile.server.security.jwt.secret = crypto
-    .randomBytes(256)
+    .randomBytes(32)
     .toString('base64');
   await createProject(options);
 }
