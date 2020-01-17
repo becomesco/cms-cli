@@ -13,7 +13,11 @@ import Listr = require('listr');
 const { projectInstall } = require('pkg-install');
 const copy = util.promisify(ncp);
 const save = util.promisify(fs.writeFile);
+const mkdir = util.promisify(fs.mkdir);
 const configFile = {
+  frontend: {
+    custom: undefined,
+  },
   server: {
     port: 1280,
     security: {
@@ -55,9 +59,11 @@ function parseArgsIntoOptions(rawArgs) {
       '--atlas': Boolean,
       '--name': String,
       '--ngit': Boolean,
+      '--custom_front': Boolean,
       '-a': '--atlas',
       '-n': '--name',
       '-ng': '--ngit',
+      '-cf': '--custom_front',
     },
     {
       argv: rawArgs.slice(2),
@@ -153,6 +159,9 @@ async function promptForMissingOptions(options: any) {
       cluster: undefined,
     };
   }
+  if (options.custom_front === true) {
+    configFile.frontend.custom.path = '/frontend';
+  }
   return {
     ...options,
     config: configFile,
@@ -188,6 +197,22 @@ async function createProject(options: any) {
     },
   ]);
   await tasks.run();
+  if (options.custom_front === true) {
+    await mkdir(path.join(process.env.PROJECT_ROOT, 'frontend'));
+    await save(
+      path.join(process.env.PROJECT_ROOT, 'frontend', 'main.js'),
+      `
+    import App from './App.svelte';
+    const app = new App({
+      target: document.body,
+    });
+    export default app;`.replace(/  /g, ''),
+    );
+    await save(
+      path.join(process.env.PROJECT_ROOT, 'frontend', 'App.svelte'),
+      `<h1>Custom CMS Front-end</h1>`,
+    );
+  }
   await save(path.join(__dirname, 'starters', 'bcms-config.js'), '');
   // tslint:disable-next-line:no-console
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
