@@ -4,7 +4,8 @@
   "description": "Starter project for Becomes CMS",
   "main": "index.js",
   "scripts": {
-    "serve": "bcms"
+    "serve": "bcms",
+    "dev": "nodemon bcms"
   },
   "keywords": [],
   "author": "",
@@ -12,5 +13,8 @@
   "dependencies": {
     "@becomes/cms": "^1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "env-cmd": "^10.0.1",
+    "nodemon": "^1.19.4"
+  }
 }

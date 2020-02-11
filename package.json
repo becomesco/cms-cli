@@ -1,13 +1,14 @@
 {
   "name": "@becomes/cms-cli",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "CLI for Becomes CMS.",
   "main": "index.js",
   "bin": {
     "bcms-cli": "bin/bcms-cli.js"
   },
   "scripts": {
-    "ts-build": "tsc -p ."
+    "ts-build": "tsc -p .",
+    "test-pkg": "node dist/bin/bcms-cli.js"
   },
   "keywords": [
     "bcms-cli"

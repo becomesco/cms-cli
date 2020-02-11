@@ -11,15 +11,17 @@ import Listr = require('listr');
 
 // tslint:disable-next-line:no-var-requires
 const { projectInstall } = require('pkg-install');
+const copyFile = util.promisify(fs.copyFile);
 const copy = util.promisify(ncp);
 const save = util.promisify(fs.writeFile);
 const mkdir = util.promisify(fs.mkdir);
 const configFile = {
   frontend: {
     custom: undefined,
+    build: false,
   },
   server: {
-    port: 1280,
+    port: '@PORT',
     security: {
       jwt: {
         secret: 'jwt-256-bit-secret',
@@ -34,16 +36,18 @@ const configFile = {
           port: 27017,
           name: 'bcms_db',
           user: 'bcms',
-          pass: 'my-db-password',
+          pass: '@DB_PASSWORD',
           prefix: 'bcms',
           cluster: '',
         },
       },
     },
     git: {
+      install: false,
+      use: false,
       email: 'user-email',
       username: 'username',
-      password: 'user-password',
+      password: '@GIT_PASSWORD',
       host: 'git-host',
       repo: 'git-repo',
       repo_owner: 'git-repo-owner',
@@ -52,8 +56,20 @@ const configFile = {
     env: {},
   },
 };
+const envFileConfig = {
+  PORT: 1280,
+  DB_PASSWORD: 'my-db-password',
+  GIT_PASSWORD: 'git-password',
+};
 
-function parseArgsIntoOptions(rawArgs) {
+function parseArgsIntoOptions(
+  rawArgs,
+): {
+  atlas: boolean;
+  name: string;
+  templateDir: string;
+  ngit: boolean;
+} {
   const args = arg(
     {
       '--atlas': Boolean,
@@ -123,10 +139,11 @@ async function promptForMissingOptions(options: any) {
       port: undefined,
       name: answers.name,
       user: answers.user,
-      pass: answers.pass,
+      pass: '@DB_PASSWORD',
       prefix: answers.prefix,
       cluster: answers.cluster,
     };
+    envFileConfig.DB_PASSWORD = answers.pass;
   } else {
     questions.push({
       type: 'input',
@@ -154,10 +171,11 @@ async function promptForMissingOptions(options: any) {
       port: answers.port,
       name: answers.name,
       user: answers.user,
-      pass: answers.pass,
+      pass: '@DB_PASSWORD',
       prefix: answers.prefix,
       cluster: undefined,
     };
+    envFileConfig.DB_PASSWORD = answers.pass;
   }
   if (options.custom_front === true) {
     configFile.frontend.custom.path = '/frontend';
@@ -189,6 +207,10 @@ async function createProject(options: any) {
       task: () => copyTemplateFiles(options),
     },
     {
+      title: 'Initialize git',
+      task: () => initGit(options),
+    },
+    {
       title: 'Install dependencies',
       task: () =>
         projectInstall({
@@ -214,6 +236,10 @@ async function createProject(options: any) {
     );
   }
   await save(path.join(__dirname, 'starters', 'bcms-config.js'), '');
+  await copyFile(
+    path.join(__dirname, 'starters', '.gitignore'),
+    path.join(process.env.PROJECT_ROOT, '.gitingore'),
+  );
   // tslint:disable-next-line:no-console
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
 }
