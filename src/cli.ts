@@ -8,6 +8,7 @@ import * as util from 'util';
 import * as execa from 'execa';
 import * as inquirer from 'inquirer';
 import Listr = require('listr');
+import { Assets } from './assets';
 
 // tslint:disable-next-line:no-var-requires
 const { projectInstall } = require('pkg-install');
@@ -248,9 +249,9 @@ async function createProject(options: any) {
     DB_PASSWORD=${envFileConfig.DB_PASSWORD}
     GIT_PASSWORD=${envFileConfig.GIT_PASSWORD}`.replace(/  /g, ''),
   );
-  await copyFile(
-    path.join(__dirname, 'starters', '.gitignore'),
+  await save(
     path.join(options.outputDir, '.gitignore'),
+    Assets.gitIgnore,
   );
   // tslint:disable-next-line:no-console
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
@@ -265,6 +266,7 @@ async function initGit(options: any) {
   return;
 }
 function printHelp() {
+  // tslint:disable-next-line:no-console
   console.log(`
   --------------------------------------------------------
   Becomes CMS CLI - Help

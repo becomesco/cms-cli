@@ -1,6 +1,6 @@
 {
   "name": "@becomes/cms-cli",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "CLI for Becomes CMS.",
   "main": "index.js",
   "bin": {
