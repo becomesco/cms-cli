@@ -1,3 +1,5 @@
+export class Assets {
+  public static gitIgnore: string = `
 # compiled output
 /dist
 /lib
@@ -37,3 +39,5 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+  `
+}

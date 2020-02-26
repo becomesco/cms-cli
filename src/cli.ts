@@ -65,6 +65,7 @@ const envFileConfig = {
 function parseArgsIntoOptions(
   rawArgs,
 ): {
+  help: boolean;
   atlas: boolean;
   name: string;
   templateDir: string;
@@ -72,10 +73,12 @@ function parseArgsIntoOptions(
 } {
   const args = arg(
     {
+      '--help': Boolean,
       '--atlas': Boolean,
       '--name': String,
       '--ngit': Boolean,
       '--custom_front': Boolean,
+      '-h': '--help',
       '-a': '--atlas',
       '-n': '--name',
       '-ng': '--ngit',
@@ -86,6 +89,7 @@ function parseArgsIntoOptions(
     },
   );
   return {
+    help: args['--help'] || false,
     atlas: args['--atlas'] || false,
     name: args['--name'] || 'bcms-project',
     templateDir: path.join(__dirname, '/starters'),
@@ -185,22 +189,16 @@ async function promptForMissingOptions(options: any) {
     config: configFile,
   };
 }
-
 async function copyTemplateFiles(options: any) {
   return copy(options.templateDir, options.outputDir, {
     clobber: false,
   });
 }
-
 async function createProject(options: any) {
   options = {
     ...options,
     outputDir: path.join(process.env.PROJECT_ROOT, options.name),
   };
-  await save(
-    path.join(__dirname, 'starters', 'bcms-config.js'),
-    `module.exports = ${JSON.stringify(options.config, null, '  ')}`,
-  );
   const tasks = new Listr([
     {
       title: 'Copy project files',
@@ -235,15 +233,28 @@ async function createProject(options: any) {
       `<h1>Custom CMS Front-end</h1>`,
     );
   }
-  await save(path.join(__dirname, 'starters', 'bcms-config.js'), '');
+  await save(
+    path.join(options.outputDir, 'bcms-config.js'),
+    `module.exports = ${JSON.stringify(options.config, null, '  ')
+      .replace('"@PORT"', 'process.env.PORT')
+      .replace('"@DB_PASSWORD"', 'process.env.DB_PASSWORD')
+      .replace('"@GIT_PASSWORD"', 'process.env.GIT_PASSWORD')
+      .replace(/":/g, ':')
+      .replace(/  "/g, '  ')}`,
+  );
+  await save(
+    path.join(options.outputDir, '.env'),
+    `PORT=${envFileConfig.PORT}
+    DB_PASSWORD=${envFileConfig.DB_PASSWORD}
+    GIT_PASSWORD=${envFileConfig.GIT_PASSWORD}`.replace(/  /g, ''),
+  );
   await copyFile(
     path.join(__dirname, 'starters', '.gitignore'),
-    path.join(process.env.PROJECT_ROOT, '.gitingore'),
+    path.join(options.outputDir, '.gitignore'),
   );
   // tslint:disable-next-line:no-console
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
 }
-
 async function initGit(options: any) {
   const result = await execa('git', ['init'], {
     cwd: options.outputDir,
@@ -253,10 +264,27 @@ async function initGit(options: any) {
   }
   return;
 }
+function printHelp() {
+  console.log(`
+  --------------------------------------------------------
+  Becomes CMS CLI - Help
+
+  --help        - Prints this message.
+  --name [NAME] - Name of project/directory that will be
+                  created for CMS.
+  --atlas       - Use MongoDB Atlas as a database for CMS.
+                  By default, CMS is using self-hosted
+                  MongoDB database.
+  -------------------------------------------------------`);
+}
 
 export async function cli(args) {
   let options = parseArgsIntoOptions(args);
   process.env.PROJECT_ROOT = process.cwd();
+  if (options.help === true) {
+    printHelp();
+    return;
+  }
   options = await promptForMissingOptions(options);
   configFile.server.security.jwt.secret = crypto
     .randomBytes(32)

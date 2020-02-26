@@ -1,4 +1,4 @@
-FROM node:10-slim
+FROM becomes/bcms:1.0.0
 
 WORKDIR /app
 
@@ -11,10 +11,8 @@ COPY package.json /app
 COPY package-lock.json /app
 COPY bcms-config.js /app
 
-
-RUN apt update && apt install git -y
 RUN npm install
 
 EXPOSE 1280
 
-ENTRYPOINT [ "npm","run","serve" ]
+ENTRYPOINT [ "npm","start" ]

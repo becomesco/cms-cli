@@ -4,8 +4,8 @@
   "description": "Starter project for Becomes CMS",
   "main": "index.js",
   "scripts": {
-    "serve": "bcms",
-    "dev": "nodemon bcms"
+    "start": "bcms",
+    "dev": "env-cmd bcms"
   },
   "keywords": [],
   "author": "",
