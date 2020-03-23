@@ -18,8 +18,17 @@ const save = util.promisify(fs.writeFile);
 const mkdir = util.promisify(fs.mkdir);
 const configFile = {
   frontend: {
-    custom: undefined,
     build: false,
+    useCustom: true,
+    custom: {
+      props: [
+        'templateStore',
+        {
+          name: 'myCustomProp',
+          value: 'Hello World!',
+        },
+      ],
+    },
   },
   server: {
     port: '@PORT',
@@ -182,9 +191,6 @@ async function promptForMissingOptions(options: any) {
     };
     envFileConfig.DB_PASSWORD = answers.pass;
   }
-  if (options.custom_front === true) {
-    configFile.frontend.custom.path = '/frontend';
-  }
   return {
     ...options,
     config: configFile,
@@ -239,9 +245,7 @@ async function createProject(options: any) {
     `module.exports = ${JSON.stringify(options.config, null, '  ')
       .replace('"@PORT"', 'process.env.PORT')
       .replace('"@DB_PASSWORD"', 'process.env.DB_PASSWORD')
-      .replace('"@GIT_PASSWORD"', 'process.env.GIT_PASSWORD')
-      .replace(/":/g, ':')
-      .replace(/  "/g, '  ')}`,
+      .replace('"@GIT_PASSWORD"', 'process.env.GIT_PASSWORD')}`,
   );
   await save(
     path.join(options.outputDir, '.env'),
@@ -249,10 +253,7 @@ async function createProject(options: any) {
     DB_PASSWORD=${envFileConfig.DB_PASSWORD}
     GIT_PASSWORD=${envFileConfig.GIT_PASSWORD}`.replace(/  /g, ''),
   );
-  await save(
-    path.join(options.outputDir, '.gitignore'),
-    Assets.gitIgnore,
-  );
+  await save(path.join(options.outputDir, '.gitignore'), Assets.gitIgnore);
   // tslint:disable-next-line:no-console
   console.log('%s Becomes CMS project is ready.', chalk.green.bold('DONE'));
 }
