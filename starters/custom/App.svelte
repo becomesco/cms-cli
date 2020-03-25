@@ -1,6 +1,6 @@
 <script>
   // Core CMS components
-  import { CodeSnippet } from '@becomes/cms-client/frontend/components';
+  import { CodeSnippet } from '@becomes/cms/frontend/components';
 
   // Props are exported by `bcms-config.js`
   export let templateStore; // Core export
@@ -8,7 +8,7 @@
 
   let templates;
 
-  templateStore.subscript(value => {
+  templateStore.subscribe(value => {
     templates = value;
   });
 </script>
