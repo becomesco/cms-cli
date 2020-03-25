@@ -24,8 +24,8 @@ const configFile = {
       props: [
         'templateStore',
         {
-          name: 'myCustomProp',
-          value: 'Hello World!',
+          name: 'pageTwoTitle',
+          value: 'This is MY page 2 title!',
         },
       ],
     },
