@@ -1,6 +1,7 @@
 import { ArgParser } from './util/arg-parser';
 import { CLIConfig } from './enums/configuration';
 import { CMSBuilder } from './cms-builder';
+import { CMSFrontBuilder } from './front-builder';
 
 function printHelp() {
   // tslint:disable-next-line:no-console
@@ -24,7 +25,14 @@ export async function cli(args) {
     printHelp();
     return;
   }
-  if (options.conf === CLIConfig.CMS) {
-    await CMSBuilder.build(options);
+  try {
+    if (options.conf === CLIConfig.CMS) {
+      await CMSBuilder.build(options);
+    } else {
+      await CMSFrontBuilder.build(options);
+    }
+  } catch (error) {
+    console.error(error);
+    return;
   }
 }

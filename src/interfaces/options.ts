@@ -9,12 +9,19 @@ export interface Options {
   outputDir?: string;
   conf: string;
   db?: {
-    host: string,
-    port: string,
-    name: string,
-    user: string,
-    pass: string,
-    prfx: string,
-    cluster: string,
-  }
+    host: string;
+    port: string;
+    name: string;
+    user: string;
+    pass: string;
+    prfx: string;
+    cluster: string;
+  };
+  frontConfig?: {
+    cmsURL: string;
+    api: {
+      key: string;
+      secret: string;
+    };
+  };
 }

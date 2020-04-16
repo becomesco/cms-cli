@@ -1,6 +1,4 @@
 import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as util from 'util';
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
@@ -11,9 +9,6 @@ import { Assets } from './util/assets';
 const { projectInstall } = require('pkg-install');
 
 export class CMSBuilder {
-  private static readonly writeFile = util.promisify(fs.writeFile);
-  private static readonly mkdir = util.promisify(fs.mkdir);
-
   public static async build(options: Options) {
     options = await this.promptForMissingOptions(options);
     try {
@@ -36,7 +31,7 @@ export class CMSBuilder {
         {
           title: 'Create BCMS configuration file.',
           task: async () => {
-            return this.writeFile(
+            return GeneralUtil.writeFile(
               path.join(options.outputDir, 'bcms-config.js'),
               `module.exports = ${JSON.stringify(Assets.BCMSConfig, null, '  ')
                 .replace('"@PORT"', 'process.env.PORT')
@@ -62,7 +57,7 @@ export class CMSBuilder {
         {
           title: 'Create APP environment file.',
           task: async () => {
-            await this.writeFile(
+            await GeneralUtil.writeFile(
               path.join(options.outputDir, 'app.env'),
               `PORT=${options.port}
         
@@ -85,13 +80,13 @@ export class CMSBuilder {
         {
           title: 'Create Docker utility scripts.',
           task: async () => {
-            await this.writeFile(
+            await GeneralUtil.writeFile(
               path.join(options.outputDir, 'docker-start.sh'),
               Assets.dockerSH
                 .replace('@port', `${options.port}`)
                 .replace('@appName', 'bcms'),
             );
-            await this.writeFile(
+            await GeneralUtil.writeFile(
               path.join(options.outputDir, 'docker-clear.sh'),
               Assets.dockerClearSH
                 .replace('@port', `${options.port}`)
@@ -108,7 +103,7 @@ export class CMSBuilder {
         {
           title: 'Create .gitignore.',
           task: async () => {
-            await this.writeFile(
+            await GeneralUtil.writeFile(
               path.join(options.outputDir, '.gitignore'),
               Assets.CMSGitIgnore,
             );
@@ -118,8 +113,8 @@ export class CMSBuilder {
           title: 'Initialize custom portal.',
           task: async () => {
             if (options.customFront === true) {
-              await this.mkdir(path.join(process.env.PROJECT_ROOT, 'frontend'));
-              await this.writeFile(
+              await GeneralUtil.mkdir(path.join(process.env.PROJECT_ROOT, 'frontend'));
+              await GeneralUtil.writeFile(
                 path.join(process.env.PROJECT_ROOT, 'frontend', 'main.js'),
                 `
               import App from './App.svelte';
@@ -128,7 +123,7 @@ export class CMSBuilder {
               });
               export default app;`.replace(/  /g, ''),
               );
-              await this.writeFile(
+              await GeneralUtil.writeFile(
                 path.join(process.env.PROJECT_ROOT, 'frontend', 'App.svelte'),
                 `<h1>Custom CMS Front-end</h1>`,
               );

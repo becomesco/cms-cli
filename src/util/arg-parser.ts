@@ -14,6 +14,7 @@ export class ArgParser {
         '--custom_front': Boolean,
         '--conf': String,
         '--port': Number,
+        '--front': String,
         '-h': '--help',
         '-a': '--atlas',
         '-n': '--name',
@@ -48,7 +49,7 @@ export class ArgParser {
   }
 
   private static confToTemplateDir(conf: string): string {
-    switch (conf.toUpperCase()) {
+    switch (conf) {
       case CLIConfig.GATSBY: {
         return path.join(
           __dirname,

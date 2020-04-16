@@ -16,6 +16,7 @@
   "author": "becomes.co",
   "license": "MIT",
   "dependencies": {
+    "@becomes/cms-client": "^1.0.4",
     "arg": "^4.1.2",
     "chalk": "^3.0.0",
     "esm": "^3.2.25",
