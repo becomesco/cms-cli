@@ -7,6 +7,7 @@ export class Assets {
 /public/bundle.*
 
 # Environment
+app.env
 .env
 
 # Logs

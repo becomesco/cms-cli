@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "bcms",
-    "dev": "env-cmd bcms"
+    "dev": "env-cmd -f app.env bcms"
   },
   "keywords": [],
   "author": "",
